@@ -7,7 +7,7 @@
     tools:context=".SignInActivity">
 
     <EditText
-        android:id="@+id/editTextTextPersonName2"
+        android:id="@+id/edtPhone"
         android:layout_width="382dp"
         android:layout_height="61dp"
         android:layout_marginTop="8dp"
@@ -43,7 +43,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.06"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextTextPersonName2" />
+        app:layout_constraintTop_toBottomOf="@+id/edtPhone" />
 
     <Button
         android:id="@+id/btnLogin"
@@ -55,10 +55,10 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.944"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextTextPersonName" />
+        app:layout_constraintTop_toBottomOf="@+id/edtPassword" />
 
     <EditText
-        android:id="@+id/editTextTextPersonName"
+        android:id="@+id/edtPassword"
         android:layout_width="375dp"
         android:layout_height="63dp"
         android:layout_marginTop="8dp"

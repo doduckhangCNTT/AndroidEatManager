@@ -26,20 +26,22 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="8dp"
-                    android:text="Hello, Admin"
+                    android:text="Hello,"
                     android:textSize="20sp"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
-                    android:id="@+id/textView6"
+                    android:id="@+id/txtRole"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
+                    android:layout_marginStart="12dp"
                     android:layout_marginTop="8dp"
-                    android:text="TextView"
+                    android:textColor="#FF5722"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/textView11"
                     app:layout_constraintTop_toBottomOf="@+id/txtNameAdmin"
                     app:layout_constraintVertical_bias="0.0" />
 
@@ -53,6 +55,28 @@
                     app:layout_constraintStart_toEndOf="@+id/txtNameAdmin"
                     app:layout_constraintTop_toTopOf="parent"
                     app:srcCompat="@drawable/profile" />
+
+                <TextView
+                    android:id="@+id/txtAdminName"
+                    android:layout_width="61dp"
+                    android:layout_height="25dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:textColor="#03A9F4"
+                    android:textSize="20sp"
+                    app:layout_constraintStart_toEndOf="@+id/txtNameAdmin"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/textView11"
+                    android:layout_width="46dp"
+                    android:layout_height="23dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="8dp"
+                    android:text="Role:"
+                    android:textSize="18sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/txtNameAdmin" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -79,7 +103,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:layout_marginEnd="36dp"
+                    android:layout_marginEnd="16dp"
                     android:text="Foods"
                     android:textSize="20sp"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -91,7 +115,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="16dp"
                     android:layout_marginBottom="4dp"
-                    android:text="Manager"
+                    android:text="Manager ||->"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent" />
 

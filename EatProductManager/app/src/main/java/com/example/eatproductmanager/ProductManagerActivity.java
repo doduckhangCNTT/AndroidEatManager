@@ -8,13 +8,18 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
-public class ProductManagerActivity extends AppCompatActivity {
+import com.example.eatproductmanager.Common.Common;
+
+public class ProductManagerActivity extends AppCompatActivity implements View.OnClickListener {
     RecyclerView.Adapter adapter;
     private RecyclerView recyclerViewCategoryList;
 
     LinearLayout btnOptions;
+    TextView txtAdminName;
+    TextView txtRole;
 
 
     @Override
@@ -22,15 +27,13 @@ public class ProductManagerActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_product_manager);
 
-        btnOptions = (LinearLayout) findViewById(R.id.btnOptions);
-        btnOptions.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(ProductManagerActivity.this, "Hello", Toast.LENGTH_SHORT).show();
-                startActivity(new Intent(ProductManagerActivity.this, HandleManagerActivity.class ));
-            }
-        });
+        // ==== Tham Chieu ====
+        findViewById(R.id.btnOptions).setOnClickListener(this);
+        txtAdminName = (TextView) findViewById(R.id.txtAdminName);
+        txtRole = (TextView) findViewById(R.id.txtRole);
 
+        txtAdminName.setText(Common.currentUser.getName());
+        txtRole.setText(Common.currentUser.getRole());
 
         recyclerViewCategory();
 
@@ -40,5 +43,14 @@ public class ProductManagerActivity extends AppCompatActivity {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         recyclerViewCategoryList = findViewById(R.id.rvCategoriesHome);
         recyclerViewCategoryList.setLayoutManager(linearLayoutManager);
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch(v.getId()) {
+            case R.id.btnOptions:
+                startActivity(new Intent(ProductManagerActivity.this, HandleManagerActivity.class ));
+                break;
+        }
     }
 }
