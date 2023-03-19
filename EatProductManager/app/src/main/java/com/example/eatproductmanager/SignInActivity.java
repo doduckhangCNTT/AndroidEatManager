@@ -69,7 +69,7 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
                     UserDomain user = snapshot.child(localPhone).getValue(UserDomain.class);
                     user.setPhone(localPhone);
 
-                    if(user.getRole().toString().equals(Role.Customer)) { // -> If isStaff == true
+                    if(user.getRole().toString().equals(Role.Admin)) { // -> If isStaff == true
                         if(user.getPassword().equals(localPassword)) {
                             // ===== Login Successfully =====
                             Intent login = new Intent(SignInActivity.this, ProductManagerActivity.class);

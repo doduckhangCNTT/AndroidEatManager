@@ -12,7 +12,7 @@
         android:orientation="vertical">
 
         <EditText
-            android:id="@+id/edSearchFood"
+            android:id="@+id/editTextTextPersonName"
             android:layout_width="match_parent"
             android:layout_height="43dp"
             android:background="@drawable/search_background"
@@ -21,11 +21,24 @@
             android:inputType="textPersonName"
             android:padding="10sp" />
 
-        <Button
-            android:id="@+id/btnDeleteFoodChoice"
-            android:layout_width="130dp"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Delete" />
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btnDeleteCategoryChoice"
+                android:layout_width="130dp"
+                android:layout_height="wrap_content"
+                android:text="Delete" />
+
+            <Button
+                android:id="@+id/btnCreateCategory"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Create Category" />
+        </LinearLayout>
 
         <ScrollView
             android:layout_width="match_parent"
@@ -37,7 +50,7 @@
                 android:orientation="vertical" >
 
                 <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rvFoods"
+                    android:id="@+id/rvCategories"
                     android:layout_width="match_parent"
                     android:layout_height="657dp" />
             </LinearLayout>

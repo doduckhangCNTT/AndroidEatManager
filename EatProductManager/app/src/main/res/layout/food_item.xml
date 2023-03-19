@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:cardCornerRadius="6dp"
+    android:elevation="6dp"
+    app:cardUseCompatPadding="true">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/imgFoodItem"
+            android:layout_width="81dp"
+            android:layout_height="70dp"
+            android:src="@drawable/cat_2"
+            app:civ_border_width="2dp" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/linearLayoutInfor"
+            android:layout_toRightOf="@+id/imgFoodItem"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/txtNameFood"
+                android:layout_width="165dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="4dp"
+                android:text="Foods Name"
+                android:textAlignment="center"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/txtDesFoodItem"
+                android:layout_width="162dp"
+                android:layout_height="40dp"
+                android:layout_marginLeft="4dp"
+                android:text="Descriptions"
+                android:textAlignment="center"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="70dp"
+            android:layout_height="49dp"
+            android:layout_marginLeft="0dp"
+            android:id="@+id/linearLayoutPrice"
+            android:layout_toRightOf="@+id/linearLayoutInfor"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/textView13"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="6dp"
+                android:text="Price:"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/txtFoodPrice"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="TextView" />
+        </LinearLayout>
+
+        <CheckBox
+            android:id="@+id/cbFoodItem"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/linearLayoutPrice"/>
+
+    </RelativeLayout>
+
+</androidx.cardview.widget.CardView>

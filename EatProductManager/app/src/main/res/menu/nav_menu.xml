@@ -12,11 +12,8 @@
             android:id="@+id/nav_users"
             android:title="Users"/>
         <item
-            android:id="@+id/nav_share"
-            android:title="Users"/>
-        <item
-            android:id="@+id/nav_about"
-            android:title="About Us"/>
+            android:id="@+id/nav_categories"
+            android:title="Categories"/>
     </group>
     <item
         android:title="">

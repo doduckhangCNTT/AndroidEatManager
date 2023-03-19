@@ -1,26 +1,39 @@
 package com.example.eatproductmanager.Domain;
 
 public class CategoryDomain {
-    private String name, image;
+    private String Name, Image;
+
+    private String CategoryID;
+
+    public String getCategoryID() {
+        return CategoryID;
+    }
+
+    public void setCategoryID(String categoryID) {
+        CategoryID = categoryID;
+    }
+
+    public CategoryDomain() {
+    }
 
     public CategoryDomain(String name, String image) {
-        this.name = name;
-        this.image = image;
+        Name = name;
+        Image = image;
     }
 
     public String getName() {
-        return name;
+        return Name;
     }
 
     public void setName(String name) {
-        this.name = name;
+        Name = name;
     }
 
     public String getImage() {
-        return image;
+        return Image;
     }
 
     public void setImage(String image) {
-        this.image = image;
+        Image = image;
     }
 }
