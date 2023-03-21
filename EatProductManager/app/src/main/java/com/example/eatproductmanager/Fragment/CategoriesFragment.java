@@ -5,14 +5,21 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.PopupMenu;
 
 import com.example.eatproductmanager.Adapter.CategoryAdapter;
 import com.example.eatproductmanager.Domain.CategoryDomain;
@@ -27,12 +34,13 @@ import com.orhanobut.dialogplus.ViewHolder;
  * Use the {@link CategoriesFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class CategoriesFragment extends Fragment {
+public class CategoriesFragment extends Fragment implements View.OnClickListener, PopupMenu.OnMenuItemClickListener {
 
     RecyclerView recyclerView;
     CategoryAdapter categoryAdapter;
     Button btnCreateCategoryItem;
     Button btnUpdateCategoryItem;
+    Button btnSortCategory;
     Dialog dialog;
 
     // TODO: Rename parameter arguments, choose names that match
@@ -69,6 +77,7 @@ public class CategoriesFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
@@ -77,6 +86,8 @@ public class CategoriesFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        setHasOptionsMenu(true); // Cho phep hien thi menu tren thanh navbar
+
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_categories, container, false);
 
@@ -85,22 +96,12 @@ public class CategoriesFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         btnCreateCategoryItem = (Button) view.findViewById(R.id.btnCreateCategory);
+        btnSortCategory = (Button) view.findViewById(R.id.btnSortedCategory);
         dialog = new Dialog(view.getContext());
 
-
-        btnCreateCategoryItem.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog.setContentView(R.layout.popup_create_category);
-
-                // === khong cho phep thuc thi nut Update ===
-//                btnUpdateCategoryItem = (Button) v.findViewById(R.id.btnUpdateCategoryItem);
-//                btnUpdateCategoryItem.setEnabled(false);
-
-                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                dialog.show();
-            }
-        });
+        // === Lang nghe su kien ===
+        btnCreateCategoryItem.setOnClickListener(this);
+        btnSortCategory.setOnClickListener(this);
 
         // ======== Truy xuất dữ liệu trong firebase =======
         FirebaseRecyclerOptions<CategoryDomain> options = new FirebaseRecyclerOptions.Builder<CategoryDomain>()
@@ -110,9 +111,72 @@ public class CategoriesFragment extends Fragment {
         categoryAdapter = new CategoryAdapter(options);
         // Xet view cua tung gia tri vao danh sach view recycler
         recyclerView.setAdapter(categoryAdapter);
-
         return view;
     }
+
+    // === Xu li khi click vao button ===
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.btnCreateCategory:
+                dialog.setContentView(R.layout.popup_create_category);
+                // === khong cho phep thuc thi nut Update ===
+                // btnUpdateCategoryItem = (Button) v.findViewById(R.id.btnUpdateCategoryItem);
+                // btnUpdateCategoryItem.setEnabled(false);
+                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                dialog.show();
+                break;
+            case R.id.btnSortedCategory:
+                showPopupMenu(v);
+                break;
+        }
+    }
+
+    private void showPopupMenu(View view) {
+        PopupMenu popupMenu = new PopupMenu(view.getContext(), view);
+        popupMenu.inflate(R.menu.action_menu_category);
+
+        popupMenu.setOnMenuItemClickListener(this);
+        popupMenu.show();
+    }
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        switch(item.getItemId()) {
+            case R.id.mnuSortCategoryName:
+                Log.d("Sort", "Sort Category");
+                return true;
+            case R.id.mnuSortCategoryPopulation:
+                Log.d("Sort", "Sort population Category");
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    // === Handle Option Menu ===
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        getActivity().getMenuInflater().inflate(R.menu.action_menu_category,menu);
+        // TODO Add your menu entries here
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.mnuSortCategoryName:
+                Log.d("Hello", "Hello Sort");
+                return true;
+            case R.id.mnuSortCategoryPopulation:
+                return true;
+            default:
+                break;
+        }
+//        return super.onOptionsItemSelected(item);
+        return false;
+    }
+    // ==========================
 
     @Override
     public void onStart() {

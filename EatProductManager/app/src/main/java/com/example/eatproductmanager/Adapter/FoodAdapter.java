@@ -1,5 +1,8 @@
 package com.example.eatproductmanager.Adapter;
 
+import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -16,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.eatproductmanager.Domain.FoodDomain;
+import com.example.eatproductmanager.FoodDetailActivity;
 import com.example.eatproductmanager.R;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
@@ -28,15 +32,19 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class FoodAdapter extends FirebaseRecyclerAdapter<FoodDomain, FoodAdapter.foodViewHolder> {
 
-
     /**
      * Initialize a {@link RecyclerView.Adapter} that listens to a Firebase query. See
      * {@link FirebaseRecyclerOptions} for configuration options.
      *
      * @param options
      */
-    public FoodAdapter(@NonNull FirebaseRecyclerOptions<FoodDomain> options) {
+
+    // === Truyen content activity ===
+    Context mcontext;
+
+    public FoodAdapter(@NonNull FirebaseRecyclerOptions<FoodDomain> options, Context context) {
         super(options);
+        mcontext = context;
     }
 
     class FoodHolderTest {
@@ -67,9 +75,7 @@ public class FoodAdapter extends FirebaseRecyclerAdapter<FoodDomain, FoodAdapter
             this.foodDomain = foodDomain;
         }
     }
-
     ArrayList<FoodHolderTest> foods = new ArrayList<>();
-
 
     @Override
     protected void onBindViewHolder(@NonNull foodViewHolder holder, int position, @NonNull FoodDomain model) {
@@ -142,8 +148,6 @@ public class FoodAdapter extends FirebaseRecyclerAdapter<FoodDomain, FoodAdapter
         public boolean onMenuItemClick(MenuItem item) {
             switch(item.getItemId()) {
                 case R.id.edtMenuFoodItem:
-                    Log.d(TAG, "Edit Food" + foods.get(getAdapterPosition()).holder.txtNameFoodItem.getText());
-
                     final DialogPlus dialogPlusFood = DialogPlus.newDialog(foods.get(getAdapterPosition()).holder.imgOptionsFoodItem.getContext())
                             .setContentHolder(new ViewHolder(R.layout.popup_create_food))
                             .setExpanded(true, 1200).create();
@@ -175,6 +179,19 @@ public class FoodAdapter extends FirebaseRecyclerAdapter<FoodDomain, FoodAdapter
                     return true;
                 case R.id.deleteCategoryItem:
                     Log.d(TAG, "Delete Category");
+                    return true;
+                case R.id.detailMenuFoodItem:
+                    Intent intent = new Intent(mcontext, FoodDetailActivity.class);
+                    Bundle b = new Bundle();
+
+                    b.putString("NameFood", foods.get(getAdapterPosition()).foodDomain.getName());
+                    b.putString("PriceFood", foods.get(getAdapterPosition()).foodDomain.getPrice());
+                    b.putString("DesFood", foods.get(getAdapterPosition()).foodDomain.getDescription());
+                    b.putString("DiscountFood", foods.get(getAdapterPosition()).foodDomain.getDiscount());
+                    b.putString("CategoryIdFood", foods.get(getAdapterPosition()).foodDomain.getCategoryID());
+                    b.putString("ImageFood", foods.get(getAdapterPosition()).foodDomain.getImage());
+                    intent.putExtras(b);
+                    mcontext.startActivity(intent);
                     return true;
                 default:
                     return false;

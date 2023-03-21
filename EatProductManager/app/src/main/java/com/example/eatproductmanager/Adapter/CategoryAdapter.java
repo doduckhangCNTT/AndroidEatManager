@@ -1,5 +1,7 @@
 package com.example.eatproductmanager.Adapter;
 
+import static com.example.eatproductmanager.Common.Common.categoriesCommon;
+
 import android.media.Image;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -85,6 +87,10 @@ public class CategoryAdapter extends FirebaseRecyclerAdapter<CategoryDomain, Cat
             holder,
             model
         ));
+
+        // === Cập nhật vào danh sách chung ===
+        categoriesCommon.add(model);
+
     }
 
     @NonNull
