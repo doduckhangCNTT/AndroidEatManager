@@ -78,12 +78,12 @@
             app:civ_border_width="2dp" />
 
         <TextView
-            android:id="@+id/txtNamFood"
-            android:layout_width="154dp"
-            android:layout_height="68dp"
+            android:id="@+id/txtNameCategoryItem"
+            android:layout_width="125dp"
+            android:layout_height="60dp"
             android:layout_marginLeft="4dp"
             android:layout_toRightOf="@+id/imgCategoryItem"
-            android:text="Categories Name"
+            android:text="Name"
             android:textAlignment="center"
             android:textSize="25sp"
             android:textStyle="bold" />
@@ -94,15 +94,16 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
             android:layout_marginTop="12dp"
-            android:layout_toRightOf="@+id/txtNamFood"
+            android:layout_toRightOf="@+id/txtNameCategoryItem"
             app:layout_constraintTop_toTopOf="parent" />
 
+
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
+            android:id="@+id/linearLayoutQualityProduct"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
             android:layout_toRightOf="@+id/cbCategoryItem"
-            >
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/textView6"
@@ -115,9 +116,20 @@
                 android:id="@+id/txtQualityProductByCategory"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:gravity="center"
                 android:text="5"
+
                 android:textSize="20sp" />
         </LinearLayout>
+
+
+        <ImageView
+            android:id="@+id/imgMenuCategoryItem"
+            android:layout_width="34dp"
+            android:layout_height="54dp"
+            android:layout_toRightOf="@+id/linearLayoutQualityProduct"
+
+            app:srcCompat="@drawable/ic_baseline_more_vert_24" />
 
 
     </RelativeLayout>

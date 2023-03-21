@@ -37,7 +37,6 @@ public class CategoryHomeAdapter  extends FirebaseRecyclerAdapter<CategoryDomain
                 .error(com.firebase.ui.database.R.drawable.common_google_signin_btn_icon_dark_normal)
                 .into(holder.imgCategoryItem);
 
-
         // Xet du lieu den tung thanh phan trong view "main_item"
         holder.txtNameCategoryItem.setText(model.getName());
     }
@@ -51,8 +50,7 @@ public class CategoryHomeAdapter  extends FirebaseRecyclerAdapter<CategoryDomain
     }
 
     class categoryViewHolder extends RecyclerView.ViewHolder {
-//        CircleImageView imgCategoryItem;
-                ImageView imgCategoryItem;
+        ImageView imgCategoryItem;
         TextView txtNameCategoryItem;
 
         public categoryViewHolder(@NonNull View itemView) {

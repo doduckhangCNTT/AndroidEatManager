@@ -10,7 +10,9 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:elevation="30dp">
+
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/imgFoodItem"
             android:layout_width="81dp"
@@ -19,9 +21,9 @@
             app:civ_border_width="2dp" />
 
         <LinearLayout
+            android:id="@+id/linearLayoutInfor"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/linearLayoutInfor"
             android:layout_toRightOf="@+id/imgFoodItem"
             android:orientation="vertical">
 
@@ -46,10 +48,10 @@
         </LinearLayout>
 
         <LinearLayout
-            android:layout_width="70dp"
-            android:layout_height="49dp"
-            android:layout_marginLeft="0dp"
             android:id="@+id/linearLayoutPrice"
+            android:layout_width="wrap_content"
+            android:layout_height="67dp"
+            android:layout_marginLeft="0dp"
             android:layout_toRightOf="@+id/linearLayoutInfor"
             android:orientation="vertical">
 
@@ -66,14 +68,24 @@
                 android:id="@+id/txtFoodPrice"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:gravity="center"
                 android:text="TextView" />
         </LinearLayout>
 
         <CheckBox
             android:id="@+id/cbFoodItem"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_toRightOf="@+id/linearLayoutPrice"/>
+            android:layout_height="62dp"
+            android:layout_marginLeft="0dp"
+            android:layout_toRightOf="@+id/linearLayoutPrice" />
+
+        <ImageView
+            android:id="@+id/imgOptionsFoodItem"
+            android:layout_width="34dp"
+            android:layout_height="64dp"
+            android:layout_marginLeft="2dp"
+            android:layout_toRightOf="@+id/cbFoodItem"
+            app:srcCompat="@drawable/ic_baseline_more_vert_24" />
 
     </RelativeLayout>
 

@@ -5,34 +5,22 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.text.Layout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.Toast;
 
 import com.example.eatproductmanager.Adapter.CategoryAdapter;
 import com.example.eatproductmanager.Domain.CategoryDomain;
 import com.example.eatproductmanager.R;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
-import com.google.android.material.bottomsheet.BottomSheetDialog;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.orhanobut.dialogplus.DialogPlus;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.BinaryOperator;
+import com.orhanobut.dialogplus.ViewHolder;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -44,6 +32,7 @@ public class CategoriesFragment extends Fragment {
     RecyclerView recyclerView;
     CategoryAdapter categoryAdapter;
     Button btnCreateCategoryItem;
+    Button btnUpdateCategoryItem;
     Dialog dialog;
 
     // TODO: Rename parameter arguments, choose names that match
@@ -98,10 +87,16 @@ public class CategoriesFragment extends Fragment {
         btnCreateCategoryItem = (Button) view.findViewById(R.id.btnCreateCategory);
         dialog = new Dialog(view.getContext());
 
+
         btnCreateCategoryItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dialog.setContentView(R.layout.popup_category);
+                dialog.setContentView(R.layout.popup_create_category);
+
+                // === khong cho phep thuc thi nut Update ===
+//                btnUpdateCategoryItem = (Button) v.findViewById(R.id.btnUpdateCategoryItem);
+//                btnUpdateCategoryItem.setEnabled(false);
+
                 dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                 dialog.show();
             }
@@ -110,6 +105,7 @@ public class CategoriesFragment extends Fragment {
         // ======== Truy xuất dữ liệu trong firebase =======
         FirebaseRecyclerOptions<CategoryDomain> options = new FirebaseRecyclerOptions.Builder<CategoryDomain>()
                 .setQuery(FirebaseDatabase.getInstance().getReference().child("Category"), CategoryDomain.class).build();
+
 
         categoryAdapter = new CategoryAdapter(options);
         // Xet view cua tung gia tri vao danh sach view recycler
