@@ -20,14 +20,21 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.PopupMenu;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.eatproductmanager.Adapter.CategoryAdapter;
 import com.example.eatproductmanager.Domain.CategoryDomain;
 import com.example.eatproductmanager.R;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.FirebaseDatabase;
 import com.orhanobut.dialogplus.DialogPlus;
 import com.orhanobut.dialogplus.ViewHolder;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -107,8 +114,7 @@ public class CategoriesFragment extends Fragment implements View.OnClickListener
         FirebaseRecyclerOptions<CategoryDomain> options = new FirebaseRecyclerOptions.Builder<CategoryDomain>()
                 .setQuery(FirebaseDatabase.getInstance().getReference().child("Category"), CategoryDomain.class).build();
 
-
-        categoryAdapter = new CategoryAdapter(options);
+        categoryAdapter = new CategoryAdapter(options, view.getContext());
         // Xet view cua tung gia tri vao danh sach view recycler
         recyclerView.setAdapter(categoryAdapter);
         return view;
@@ -121,8 +127,39 @@ public class CategoriesFragment extends Fragment implements View.OnClickListener
             case R.id.btnCreateCategory:
                 dialog.setContentView(R.layout.popup_create_category);
                 // === khong cho phep thuc thi nut Update ===
-                // btnUpdateCategoryItem = (Button) v.findViewById(R.id.btnUpdateCategoryItem);
-                // btnUpdateCategoryItem.setEnabled(false);
+                 btnUpdateCategoryItem = (Button) dialog.findViewById(R.id.btnUpdateCategoryItem);
+                 btnUpdateCategoryItem.setEnabled(false);
+
+                TextView nameCategoryItem = (TextView) dialog.findViewById(R.id.edtNameCategoryItem);
+                TextView imgUrlCategoryItem = (TextView) dialog.findViewById(R.id.edtImageCategoryItem);
+                Button btnCreateCategoryItem = (Button) dialog.findViewById(R.id.btnCreateCategoryItem);
+
+                btnCreateCategoryItem.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Log.d("Test: ", nameCategoryItem.getText().toString() + " " + imgUrlCategoryItem.getText().toString());
+
+                        Map<String, Object> map = new HashMap<>();
+                        map.put("name", nameCategoryItem.getText().toString());
+                        map.put("image", imgUrlCategoryItem.getText().toString());
+
+                        FirebaseDatabase.getInstance().getReference().child("Category").push()
+                                .setValue(map)
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void unused) {
+                                        Toast.makeText(v.getContext(), "Data Inserted Successfully", Toast.LENGTH_SHORT).show();
+                                    }
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Toast.makeText(v.getContext(), "Erorr while inserted", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                    }
+                });
+
                 dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                 dialog.show();
                 break;
@@ -132,6 +169,7 @@ public class CategoriesFragment extends Fragment implements View.OnClickListener
         }
     }
 
+    // === Xử lí Menu Popup ===
     private void showPopupMenu(View view) {
         PopupMenu popupMenu = new PopupMenu(view.getContext(), view);
         popupMenu.inflate(R.menu.action_menu_category);

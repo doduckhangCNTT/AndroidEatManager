@@ -2,6 +2,10 @@ package com.example.eatproductmanager.Adapter;
 
 import static com.example.eatproductmanager.Common.Common.categoriesCommon;
 
+import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.media.Image;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,6 +17,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -22,10 +27,15 @@ import com.example.eatproductmanager.Domain.CategoryDomain;
 import com.example.eatproductmanager.R;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.FirebaseDatabase;
 import com.orhanobut.dialogplus.DialogPlus;
 import com.orhanobut.dialogplus.ViewHolder;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -36,9 +46,15 @@ public class CategoryAdapter extends FirebaseRecyclerAdapter<CategoryDomain, Cat
      *
      * @param options
      */
-    public CategoryAdapter(@NonNull FirebaseRecyclerOptions<CategoryDomain> options) {
+
+    Context contextFood;
+    public CategoryAdapter(@NonNull FirebaseRecyclerOptions<CategoryDomain> options, Context context) {
         super(options);
+
+        contextFood = context;
     }
+
+    private int positionCategoryItem;
 
     class CategoryHolderTest {
         categoryViewHolder holder;
@@ -71,7 +87,7 @@ public class CategoryAdapter extends FirebaseRecyclerAdapter<CategoryDomain, Cat
     ArrayList<CategoryHolderTest> categories = new ArrayList<>();
 
     @Override
-    protected void onBindViewHolder(@NonNull categoryViewHolder holder, int position, @NonNull CategoryDomain model) {
+    protected void onBindViewHolder(@NonNull categoryViewHolder holder, @SuppressLint("RecyclerView") int position, @NonNull CategoryDomain model) {
         // Xet image
         Glide.with(holder.imgCategoryItem.getContext())
                 .load(model.getImage())
@@ -88,9 +104,18 @@ public class CategoryAdapter extends FirebaseRecyclerAdapter<CategoryDomain, Cat
             model
         ));
 
-        // === Cập nhật vào danh sách chung ===
-        categoriesCommon.add(model);
+        holder.imgMenuCategoryItem.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("CategoryViewHolder", "Position: " + position);
+                positionCategoryItem = position;
 
+                holder.showPopupMenu(v);
+            }
+        });
+
+        // === Cập nhật vào danh sách chung ===
+        // categoriesCommon.add(model);
     }
 
     @NonNull
@@ -116,15 +141,15 @@ public class CategoryAdapter extends FirebaseRecyclerAdapter<CategoryDomain, Cat
             imgMenuCategoryItem = (ImageView) itemView.findViewById(R.id.imgMenuCategoryItem);
 
             // === Xử lí trên option Menu ===
-            imgMenuCategoryItem.setOnClickListener(this);
+//            imgMenuCategoryItem.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View v) {
             switch (v.getId()) {
-                case R.id.imgMenuCategoryItem:
-                    showPopupMenu(v);
-                    break;
+//                case R.id.imgMenuCategoryItem:
+//                    showPopupMenu(v);
+//                    break;
             }
         }
 
@@ -141,7 +166,7 @@ public class CategoryAdapter extends FirebaseRecyclerAdapter<CategoryDomain, Cat
         public boolean onMenuItemClick(MenuItem item) {
             switch(item.getItemId()) {
                 case R.id.editCategoryItem:
-                    Log.d(TAG, "Edit Category" + categories.get(getAdapterPosition()).holder.txtNameCategoryItem.getText());
+                    Log.d(TAG, "Test: " + categories.get(getAdapterPosition()).holder.txtNameCategoryItem.getText());
 
                     final DialogPlus dialogPlusCategory = DialogPlus.newDialog(categories.get(getAdapterPosition()).holder.imgCategoryItem.getContext())
                             .setContentHolder(new ViewHolder(R.layout.popup_create_category))
@@ -158,13 +183,65 @@ public class CategoryAdapter extends FirebaseRecyclerAdapter<CategoryDomain, Cat
                     btnCreate.setEnabled(false);
 
                     // === Đặt giá trị vào dialogplus ===
-                    name.setText(categories.get(getAdapterPosition()).holder.txtNameCategoryItem.getText());
+                    name.setText(categories.get(getAdapterPosition()).categoryDomain.getName());
                     image.setText(categories.get(getAdapterPosition()).categoryDomain.getImage());
+
+                    Button updateCategoryItem = (Button) view.findViewById(R.id.btnUpdateCategoryItem);
+
+                    updateCategoryItem.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+
+                            Map<String, Object> map = new HashMap<>();
+                            map.put("name", name.getText().toString());
+                            map.put("image", image.getText().toString());
+
+                            FirebaseDatabase.getInstance().getReference().child("Category")
+                                    .child(getRef(positionCategoryItem).getKey())
+                                    .updateChildren(map)
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void unused) {
+                                            Toast.makeText(view.getContext(), "Data Update Successfully", Toast.LENGTH_SHORT).show();
+                                            dialogPlusCategory.dismiss(); // -> Dong dialogsPlus
+                                        }
+                                    })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            Toast.makeText(view.getContext(), "Error while updating", Toast.LENGTH_SHORT).show();
+                                            dialogPlusCategory.dismiss(); // -> Dong dialogsPlus
+                                        }
+                                    });
+
+                        }
+                    });
 
                     dialogPlusCategory.show();
                     return true;
                 case R.id.deleteCategoryItem:
                     Log.d(TAG, "Delete Category");
+                    AlertDialog.Builder builder = new AlertDialog.Builder(contextFood);
+                    builder.setTitle("Are you sure");
+                    builder.setMessage("Deleted data can't be undo");
+
+                    builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            // Thuc hien xoa du lieu tren Firebase
+                            FirebaseDatabase.getInstance().getReference().child("Category")
+                                    .child(getRef(positionCategoryItem).getKey()).removeValue();
+                        }
+                    });
+
+                    builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Toast.makeText(contextFood, "Cancelled", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+
+                    builder.show();
                     return true;
                 default:
                     return false;
