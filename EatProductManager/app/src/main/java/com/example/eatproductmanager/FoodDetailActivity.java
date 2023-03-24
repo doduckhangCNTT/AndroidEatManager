@@ -53,9 +53,9 @@ public class FoodDetailActivity extends AppCompatActivity {
         Bundle bundle = intent.getExtras();
         if(bundle != null){
             String nameFood = bundle.getString("NameFood");
-            String priceFood = bundle.getString("PriceFood");
+            Integer priceFood = bundle.getInt("PriceFood");
             String desFood = bundle.getString("DesFood");
-            String discountFood = bundle.getString("DiscountFood");
+            Integer discountFood = bundle.getInt("DiscountFood");
             String categoryIdFood = bundle.getString("CategoryIdFood");
             String imageFood = bundle.getString("ImageFood");
 
@@ -75,9 +75,9 @@ public class FoodDetailActivity extends AppCompatActivity {
                     // Do something with the data
                     if (data != null) {
                         nameFoodDetail.setText(nameFood);
-                        priceFoodDetail.setText(priceFood);
+                        priceFoodDetail.setText(priceFood + "");
                         desFoodDetail.setText(desFood);
-                        discountFoodDetail.setText(discountFood);
+                        discountFoodDetail.setText(discountFood + "");
                         categoryIdFoodDetail.setText((String) data.get("name"));
 
                         Glide.with(imageFoodDetail)

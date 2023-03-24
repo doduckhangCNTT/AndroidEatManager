@@ -47,7 +47,10 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
     public void onClick(View v) {
         switch(v.getId()) {
             case R.id.btnLogin:
-                signInUser(edtPhone.getText().toString(), edtPassword.getText().toString());
+                Intent login = new Intent(SignInActivity.this, ProductManagerActivity.class);
+                startActivity(login);
+
+//                signInUser(edtPhone.getText().toString(), edtPassword.getText().toString());
                 break;
         }
     }

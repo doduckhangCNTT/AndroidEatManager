@@ -3,6 +3,17 @@ package com.example.eatproductmanager.Domain;
 public class UserDomain {
     private String Name, Password, Phone, Role;
 
+    public int getEatItCoin() {
+        return eatItCoin;
+    }
+
+    public void setEatItCoin(int eatItCoin) {
+        this.eatItCoin = eatItCoin;
+    }
+
+    private int eatItCoin;
+
+
     public UserDomain() {
     }
 

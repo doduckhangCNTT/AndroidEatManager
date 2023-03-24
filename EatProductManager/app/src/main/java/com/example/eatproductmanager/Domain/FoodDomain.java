@@ -1,19 +1,18 @@
 package com.example.eatproductmanager.Domain;
 
 public class FoodDomain {
-    private String CategoryID, Description,
-            Discount,
-            Image, Name, Price;
+    private String CategoryID, Description, Image, Name;
+    private int Discount, Price;
 
     public FoodDomain() {
     }
 
-    public FoodDomain(String categoryID, String description, String discount, String image, String name, String price) {
+    public FoodDomain(String categoryID, String description, String image, String name, int discount, int price) {
         CategoryID = categoryID;
         Description = description;
-        Discount = discount;
         Image = image;
         Name = name;
+        Discount = discount;
         Price = price;
     }
 
@@ -33,14 +32,6 @@ public class FoodDomain {
         Description = description;
     }
 
-    public String getDiscount() {
-        return Discount;
-    }
-
-    public void setDiscount(String discount) {
-        Discount = discount;
-    }
-
     public String getImage() {
         return Image;
     }
@@ -57,11 +48,19 @@ public class FoodDomain {
         Name = name;
     }
 
-    public String getPrice() {
+    public int getDiscount() {
+        return Discount;
+    }
+
+    public void setDiscount(int discount) {
+        Discount = discount;
+    }
+
+    public int getPrice() {
         return Price;
     }
 
-    public void setPrice(String price) {
+    public void setPrice(int price) {
         Price = price;
     }
 }

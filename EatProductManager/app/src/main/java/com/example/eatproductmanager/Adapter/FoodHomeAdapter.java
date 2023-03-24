@@ -41,7 +41,7 @@ public class FoodHomeAdapter extends FirebaseRecyclerAdapter<FoodDomain, FoodHom
 
         // Xet du lieu den tung thanh phan trong view "main_item"
         holder.txtNameFoodItem.setText(model.getName());
-        holder.txtPriceFoodItem.setText(model.getPrice());
+        holder.txtPriceFoodItem.setText(model.getPrice() + "");
     }
 
     @NonNull

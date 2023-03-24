@@ -1,6 +1,9 @@
 package com.example.eatproductmanager.Adapter;
 
+import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -9,10 +12,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -23,10 +29,15 @@ import com.example.eatproductmanager.FoodDetailActivity;
 import com.example.eatproductmanager.R;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.FirebaseDatabase;
 import com.orhanobut.dialogplus.DialogPlus;
 import com.orhanobut.dialogplus.ViewHolder;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -41,6 +52,10 @@ public class FoodAdapter extends FirebaseRecyclerAdapter<FoodDomain, FoodAdapter
 
     // === Truyen content activity ===
     Context mcontext;
+
+    private int positionFoodItem;
+
+    public static ArrayList<Integer> positionsFoodChecked = new ArrayList<Integer>();
 
     public FoodAdapter(@NonNull FirebaseRecyclerOptions<FoodDomain> options, Context context) {
         super(options);
@@ -78,7 +93,7 @@ public class FoodAdapter extends FirebaseRecyclerAdapter<FoodDomain, FoodAdapter
     ArrayList<FoodHolderTest> foods = new ArrayList<>();
 
     @Override
-    protected void onBindViewHolder(@NonNull foodViewHolder holder, int position, @NonNull FoodDomain model) {
+    protected void onBindViewHolder(@NonNull foodViewHolder holder, @SuppressLint("RecyclerView") int position, @NonNull FoodDomain model) {
         // Xet image
         Glide.with(holder.imgFoodItem.getContext())
                 .load(model.getImage())
@@ -90,12 +105,39 @@ public class FoodAdapter extends FirebaseRecyclerAdapter<FoodDomain, FoodAdapter
         // Xet du lieu den tung thanh phan trong view "main_item"
         holder.txtNameFoodItem.setText(model.getName());
         holder.txtDesFoodItem.setText(model.getDescription());
-        holder.txtPriceFoodItem.setText(model.getPrice());
+        holder.txtPriceFoodItem.setText(model.getPrice() + "");
 
         foods.add(new FoodHolderTest (
             holder,
             model
         ));
+
+        holder.imgOptionsFoodItem.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                positionFoodItem = position;
+                holder.showPopupMenu(v);
+            }
+        });
+
+        holder.cbFoodItem.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(holder.cbFoodItem.isChecked()) {
+                    positionsFoodChecked.add(position);
+                    Log.d("Checked", "checked: " + positionsFoodChecked.toString());
+                } else {
+                    ArrayList<Integer> positionsRestChecked = new ArrayList<Integer>();
+                    for(int p : positionsFoodChecked) {
+                        if(p != position) {
+                            positionsRestChecked.add(p);
+                        }
+                    }
+                    positionsFoodChecked = positionsRestChecked;
+                    Log.d("Checked", "not checked "  + positionsFoodChecked.toString());
+                }
+            }
+        });
     }
 
     @NonNull
@@ -111,6 +153,7 @@ public class FoodAdapter extends FirebaseRecyclerAdapter<FoodDomain, FoodAdapter
         TextView txtDesFoodItem;
         TextView txtPriceFoodItem;
         ImageView imgOptionsFoodItem;
+        CheckBox cbFoodItem;
 
         private static final String TAG = "FoodViewHolder";
 
@@ -122,17 +165,17 @@ public class FoodAdapter extends FirebaseRecyclerAdapter<FoodDomain, FoodAdapter
             txtDesFoodItem = (TextView) itemView.findViewById(R.id.txtDesFoodItem);
             txtPriceFoodItem = (TextView) itemView.findViewById(R.id.txtFoodPrice);
             imgOptionsFoodItem = (ImageView)itemView.findViewById(R.id.imgOptionsFoodItem);
-
+            cbFoodItem = (CheckBox) itemView.findViewById(R.id.cbFoodItem);
             // === Xử lí trên option Menu ===
-            imgOptionsFoodItem.setOnClickListener(this);
+//            imgOptionsFoodItem.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View v) {
             switch (v.getId()) {
-                case R.id.imgOptionsFoodItem:
-                    showPopupMenu(v);
-                    break;
+//                case R.id.imgOptionsFoodItem:
+//                    showPopupMenu(v);
+//                    break;
             }
         }
 
@@ -169,25 +212,79 @@ public class FoodAdapter extends FirebaseRecyclerAdapter<FoodDomain, FoodAdapter
 
                     // === Đặt giá trị vào dialogplus ===
                     name.setText(foods.get(getAdapterPosition()).foodDomain.getName());
-                    price.setText(foods.get(getAdapterPosition()).foodDomain.getPrice());
+                    price.setText(foods.get(getAdapterPosition()).foodDomain.getPrice() + "");
                     description.setText(foods.get(getAdapterPosition()).foodDomain.getDescription());
-                    discount.setText(foods.get(getAdapterPosition()).foodDomain.getDiscount());
+                    discount.setText(foods.get(getAdapterPosition()).foodDomain.getDiscount() + "");
                     category.setText(foods.get(getAdapterPosition()).foodDomain.getCategoryID());
                     image.setText(foods.get(getAdapterPosition()).foodDomain.getImage());
 
+                    Button updateFoodItem = (Button) view.findViewById(R.id.btnUpdateFoodItem);
+                    updateFoodItem.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+
+                            Map<String, Object> map = new HashMap<>();
+                            map.put("name", name.getText().toString());
+                            map.put("image", image.getText().toString());
+                            map.put("price", Integer.parseInt(price.getText().toString()));
+                            map.put("description", description.getText().toString());
+                            map.put("discount", Integer.parseInt(discount.getText().toString()));
+                            map.put("categoryID", category.getText().toString());
+
+                            FirebaseDatabase.getInstance().getReference().child("Food")
+                                    .child(getRef(positionFoodItem).getKey())
+                                    .updateChildren(map)
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void unused) {
+                                            Toast.makeText(view.getContext(), "Data Update Successfully", Toast.LENGTH_SHORT).show();
+                                            dialogPlusFood.dismiss(); // -> Dong dialogsPlus
+                                        }
+                                    })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            Toast.makeText(view.getContext(), "Error while updating", Toast.LENGTH_SHORT).show();
+                                            dialogPlusFood.dismiss(); // -> Dong dialogsPlus
+                                        }
+                                    });
+                            }
+                        });
+
                     dialogPlusFood.show();
                     return true;
-                case R.id.deleteCategoryItem:
+                case R.id.deleteMenuFoodItem:
                     Log.d(TAG, "Delete Category");
+                    AlertDialog.Builder builder = new AlertDialog.Builder(mcontext);
+                    builder.setTitle("Are you sure");
+                    builder.setMessage("Deleted data can't be undo");
+
+                    builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            // Thuc hien xoa du lieu tren Firebase
+                            FirebaseDatabase.getInstance().getReference().child("Food")
+                                    .child(getRef(positionFoodItem).getKey()).removeValue();
+                        }
+                    });
+
+                    builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Toast.makeText(mcontext, "Cancelled", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+
+                    builder.show();
                     return true;
                 case R.id.detailMenuFoodItem:
                     Intent intent = new Intent(mcontext, FoodDetailActivity.class);
                     Bundle b = new Bundle();
 
                     b.putString("NameFood", foods.get(getAdapterPosition()).foodDomain.getName());
-                    b.putString("PriceFood", foods.get(getAdapterPosition()).foodDomain.getPrice());
+                    b.putInt("PriceFood", foods.get(getAdapterPosition()).foodDomain.getPrice());
                     b.putString("DesFood", foods.get(getAdapterPosition()).foodDomain.getDescription());
-                    b.putString("DiscountFood", foods.get(getAdapterPosition()).foodDomain.getDiscount());
+                    b.putInt("DiscountFood", foods.get(getAdapterPosition()).foodDomain.getDiscount());
                     b.putString("CategoryIdFood", foods.get(getAdapterPosition()).foodDomain.getCategoryID());
                     b.putString("ImageFood", foods.get(getAdapterPosition()).foodDomain.getImage());
                     intent.putExtras(b);

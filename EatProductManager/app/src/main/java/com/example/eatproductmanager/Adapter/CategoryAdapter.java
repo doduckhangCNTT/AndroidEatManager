@@ -13,6 +13,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
@@ -29,7 +31,12 @@ import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.orhanobut.dialogplus.DialogPlus;
 import com.orhanobut.dialogplus.ViewHolder;
 
@@ -48,6 +55,9 @@ public class CategoryAdapter extends FirebaseRecyclerAdapter<CategoryDomain, Cat
      */
 
     Context contextFood;
+    String clubkey;
+    public static ArrayList<Integer> positionsCategoryChecked = new ArrayList<Integer>();
+
     public CategoryAdapter(@NonNull FirebaseRecyclerOptions<CategoryDomain> options, Context context) {
         super(options);
 
@@ -55,6 +65,7 @@ public class CategoryAdapter extends FirebaseRecyclerAdapter<CategoryDomain, Cat
     }
 
     private int positionCategoryItem;
+    private String qualityFood;
 
     class CategoryHolderTest {
         categoryViewHolder holder;
@@ -99,6 +110,68 @@ public class CategoryAdapter extends FirebaseRecyclerAdapter<CategoryDomain, Cat
         // Xet du lieu den tung thanh phan trong view "main_item"
         holder.txtNameCategoryItem.setText(model.getName());
 
+        // === Xu lí hiển thị số sản phẩm theo Category tương ứng ===
+        DatabaseReference productsRef = FirebaseDatabase.getInstance().getReference("Food");
+        DatabaseReference categorysRef = FirebaseDatabase.getInstance().getReference("Category");
+        categorysRef
+                .orderByChild("name")
+                .equalTo(model.getName())
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
+                            clubkey = childSnapshot.getKey();
+                            holder.txtCategoryIdItem.setText(clubkey);
+                            Log.d("Cases", "Id: " + clubkey);
+
+                            Query query = productsRef.orderByChild("categoryID").equalTo(clubkey);
+                            query.addValueEventListener(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                    Log.i("Cases", "M case count: "+snapshot.getChildrenCount());
+                                    holder.txtQualityProductByCategory.setText(snapshot.getChildrenCount() + "");
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError error) {
+                                    throw error.toException(); // Never ignore errors
+                                }
+                            });
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+
+
+
+
+
+
+
+        holder.cbCategoryItem.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(holder.cbCategoryItem.isChecked()) {
+                    positionsCategoryChecked.add(position);
+                    Log.d("Checked", "checked: " + positionsCategoryChecked.toString());
+                } else {
+                    ArrayList<Integer> positionsRestChecked = new ArrayList<Integer>();
+                    for(int p : positionsCategoryChecked) {
+                        if(p != position) {
+                            positionsRestChecked.add(p);
+                        }
+                    }
+                    positionsCategoryChecked = positionsRestChecked;
+                    Log.d("Checked", "not checked "  + positionsCategoryChecked.toString());
+                }
+            }
+        });
+
         categories.add(new CategoryHolderTest(
             holder,
             model
@@ -107,9 +180,8 @@ public class CategoryAdapter extends FirebaseRecyclerAdapter<CategoryDomain, Cat
         holder.imgMenuCategoryItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d("CategoryViewHolder", "Position: " + position);
                 positionCategoryItem = position;
-
+                qualityFood = holder.txtQualityProductByCategory.getText().toString();
                 holder.showPopupMenu(v);
             }
         });
@@ -130,6 +202,9 @@ public class CategoryAdapter extends FirebaseRecyclerAdapter<CategoryDomain, Cat
         CircleImageView imgCategoryItem;
         TextView txtNameCategoryItem;
         ImageView imgMenuCategoryItem;
+        TextView txtCategoryIdItem;
+        CheckBox cbCategoryItem;
+        TextView txtQualityProductByCategory;
 
         private static final String TAG = "CategoryViewHolder";
 
@@ -138,7 +213,10 @@ public class CategoryAdapter extends FirebaseRecyclerAdapter<CategoryDomain, Cat
 
             imgCategoryItem = (CircleImageView) itemView.findViewById(R.id.imgCategoryItem);
             txtNameCategoryItem = (TextView) itemView.findViewById(R.id.txtNameCategoryItem);
+            txtCategoryIdItem = (TextView) itemView.findViewById(R.id.txtCategoryIdItem);
+            txtQualityProductByCategory = (TextView) itemView.findViewById(R.id.txtQualityProductByCategory);
             imgMenuCategoryItem = (ImageView) itemView.findViewById(R.id.imgMenuCategoryItem);
+            cbCategoryItem = (CheckBox) itemView.findViewById(R.id.cbCategoryItem);
 
             // === Xử lí trên option Menu ===
 //            imgMenuCategoryItem.setOnClickListener(this);
@@ -213,7 +291,6 @@ public class CategoryAdapter extends FirebaseRecyclerAdapter<CategoryDomain, Cat
                                             dialogPlusCategory.dismiss(); // -> Dong dialogsPlus
                                         }
                                     });
-
                         }
                     });
 
@@ -222,15 +299,25 @@ public class CategoryAdapter extends FirebaseRecyclerAdapter<CategoryDomain, Cat
                 case R.id.deleteCategoryItem:
                     Log.d(TAG, "Delete Category");
                     AlertDialog.Builder builder = new AlertDialog.Builder(contextFood);
+                    AlertDialog.Builder builder1 = new AlertDialog.Builder(contextFood);
                     builder.setTitle("Are you sure");
                     builder.setMessage("Deleted data can't be undo");
 
                     builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            // Thuc hien xoa du lieu tren Firebase
-                            FirebaseDatabase.getInstance().getReference().child("Category")
-                                    .child(getRef(positionCategoryItem).getKey()).removeValue();
+                            if(Integer.parseInt(qualityFood) == 0) {
+                                // Thuc hien xoa du lieu tren Firebase
+                                FirebaseDatabase.getInstance().getReference().child("Category")
+                                        .child(getRef(positionCategoryItem).getKey()).removeValue();
+                                Log.d("Cases", "Test1");
+
+                            } else {
+                                Log.d("Cases", "Test");
+                                builder1.setTitle("Not delete");
+                                builder1.setMessage("You can't delete this category because foods > 0");
+                                builder1.show();
+                            }
                         }
                     });
 

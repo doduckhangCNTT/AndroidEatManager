@@ -9,10 +9,11 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:padding="10sp">
 
         <EditText
-            android:id="@+id/editTextTextPersonName"
+            android:id="@+id/edtSearchCategory"
             android:layout_width="match_parent"
             android:layout_height="43dp"
             android:background="@drawable/search_background"
@@ -28,23 +29,25 @@
 
             <Button
                 android:id="@+id/btnSortedCategory"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                android:layout_width="105dp"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Sorted" />
 
             <Button
                 android:id="@+id/btnDeleteCategoryChoice"
-                android:layout_width="130dp"
+                android:layout_width="112dp"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="10sp"
+                android:layout_marginRight="10sp"
                 android:text="Delete" />
 
             <Button
                 android:id="@+id/btnCreateCategory"
-                android:layout_width="wrap_content"
+                android:layout_width="148dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Create Category" />
+                android:text="Create" />
         </LinearLayout>
 
         <ScrollView
@@ -54,7 +57,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical" >
+                android:orientation="vertical">
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rvCategories"

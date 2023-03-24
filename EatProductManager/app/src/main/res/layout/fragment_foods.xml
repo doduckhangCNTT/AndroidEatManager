@@ -9,17 +9,35 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:padding="10sp">
 
-        <EditText
-            android:id="@+id/edSearchFood"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="43dp"
-            android:background="@drawable/search_background"
-            android:ems="10"
-            android:hint="Search Food"
-            android:inputType="textPersonName"
-            android:padding="10sp" />
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/edtSearchFood"
+                android:layout_width="170dp"
+                android:layout_height="43dp"
+                android:background="@drawable/search_background"
+                android:ems="10"
+                android:hint="Search Food"
+                android:inputType="textPersonName"
+                android:padding="10sp" />
+
+            <EditText
+                android:id="@+id/edtSearchCategoryIdFood"
+                android:layout_width="wrap_content"
+                android:layout_height="43dp"
+                android:layout_marginLeft="10sp"
+                android:background="@drawable/search_background"
+                android:ems="10"
+                android:hint="Search Category By Id"
+                android:inputType="textPersonName"
+                android:padding="10sp" />
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -57,7 +75,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical" >
+                android:orientation="vertical">
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rvFoods"

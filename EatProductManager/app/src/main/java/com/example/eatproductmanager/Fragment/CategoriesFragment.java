@@ -1,6 +1,11 @@
 package com.example.eatproductmanager.Fragment;
 
+
+import static com.example.eatproductmanager.Adapter.CategoryAdapter.positionsCategoryChecked;
+
+import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -10,6 +15,8 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -24,16 +31,27 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.eatproductmanager.Adapter.CategoryAdapter;
+import com.example.eatproductmanager.Adapter.FoodAdapter;
 import com.example.eatproductmanager.Domain.CategoryDomain;
+import com.example.eatproductmanager.Domain.FoodDomain;
 import com.example.eatproductmanager.R;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.orhanobut.dialogplus.DialogPlus;
 import com.orhanobut.dialogplus.ViewHolder;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -48,7 +66,11 @@ public class CategoriesFragment extends Fragment implements View.OnClickListener
     Button btnCreateCategoryItem;
     Button btnUpdateCategoryItem;
     Button btnSortCategory;
+    Button btnDeleteCategoryItem;
     Dialog dialog;
+    View view;
+
+    TextView txtSearchCategory;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -96,19 +118,47 @@ public class CategoriesFragment extends Fragment implements View.OnClickListener
         setHasOptionsMenu(true); // Cho phep hien thi menu tren thanh navbar
 
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_categories, container, false);
+        view = inflater.inflate(R.layout.fragment_categories, container, false);
 
         // Tham chieu den recycler view
         recyclerView = (RecyclerView) view.findViewById(R.id.rvCategories);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-
         btnCreateCategoryItem = (Button) view.findViewById(R.id.btnCreateCategory);
+        btnDeleteCategoryItem = (Button) view.findViewById(R.id.btnDeleteCategoryChoice);
         btnSortCategory = (Button) view.findViewById(R.id.btnSortedCategory);
+        txtSearchCategory = (TextView) view.findViewById(R.id.edtSearchCategory);
+
         dialog = new Dialog(view.getContext());
 
         // === Lang nghe su kien ===
         btnCreateCategoryItem.setOnClickListener(this);
+        btnDeleteCategoryItem.setOnClickListener(this);
         btnSortCategory.setOnClickListener(this);
+        // === Xu li tim kiem ===
+        txtSearchCategory.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                String txtSearch = txtSearchCategory.getText().toString();
+                // Tìm kiếm trên Firebase
+                FirebaseRecyclerOptions<CategoryDomain> options = new FirebaseRecyclerOptions.Builder<CategoryDomain>()
+                        .setQuery(FirebaseDatabase.getInstance().getReference().child("Category").orderByChild("name").startAt(txtSearch).endAt(txtSearch+"~"), CategoryDomain.class)
+                        .build();
+
+                categoryAdapter = new CategoryAdapter(options, view.getContext());
+                categoryAdapter.startListening();
+                recyclerView.setAdapter(categoryAdapter);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
 
         // ======== Truy xuất dữ liệu trong firebase =======
         FirebaseRecyclerOptions<CategoryDomain> options = new FirebaseRecyclerOptions.Builder<CategoryDomain>()
@@ -166,6 +216,55 @@ public class CategoriesFragment extends Fragment implements View.OnClickListener
             case R.id.btnSortedCategory:
                 showPopupMenu(v);
                 break;
+            case R.id.btnDeleteCategoryChoice:
+                AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+                builder.setTitle("Are you sure");
+                builder.setMessage("Deleted data can't be undo");
+
+                builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Thuc hien xoa du lieu tren Firebase
+                        DatabaseReference productsRef = FirebaseDatabase.getInstance().getReference("Category");
+
+                        for(int i : positionsCategoryChecked) {
+                            // Specify the position of the product you want to delete
+                            int position = i; // Replace 0 with the actual position
+
+                            // Get the key of the product at the specified position
+                            Query query = productsRef.orderByKey().limitToFirst(position + 1);
+                            query.addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    String productKey = null;
+                                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                                        productKey = snapshot.getKey();
+                                    }
+
+                                    // Delete the product with the retrieved key
+                                    if (productKey != null) {
+                                        DatabaseReference productRef = productsRef.child(productKey);
+                                        productRef.removeValue();
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
+                                    // Handle errors here
+                                }
+                            });
+                        }
+                    }
+                });
+
+                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                });
+
+                builder.show();
+                break;
         }
     }
 
@@ -182,6 +281,13 @@ public class CategoriesFragment extends Fragment implements View.OnClickListener
         switch(item.getItemId()) {
             case R.id.mnuSortCategoryName:
                 Log.d("Sort", "Sort Category");
+                FirebaseRecyclerOptions<CategoryDomain> options = new FirebaseRecyclerOptions.Builder<CategoryDomain>()
+                        .setQuery(FirebaseDatabase.getInstance().getReference().child("Category").orderByChild("name"), CategoryDomain.class)
+                        .build();
+
+                categoryAdapter = new CategoryAdapter(options, view.getContext());
+                categoryAdapter.startListening();
+                recyclerView.setAdapter(categoryAdapter);
                 return true;
             case R.id.mnuSortCategoryPopulation:
                 Log.d("Sort", "Sort population Category");
@@ -198,7 +304,6 @@ public class CategoriesFragment extends Fragment implements View.OnClickListener
         // TODO Add your menu entries here
         super.onCreateOptionsMenu(menu, inflater);
     }
-
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {

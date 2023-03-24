@@ -43,12 +43,12 @@ public class ProductManagerActivity extends AppCompatActivity implements View.On
         txtAdminName = (TextView) findViewById(R.id.txtAdminName);
         txtRole = (TextView) findViewById(R.id.txtRole);
 
-        txtAdminName.setText(Common.currentUser.getName());
-        txtRole.setText(Common.currentUser.getRole());
+//        txtAdminName.setText(Common.currentUser.getName());
+//        txtRole.setText(Common.currentUser.getRole());
 
         // === Xử lí đẩy dữ liệu từ view_item vào recylerview trong page Home ===
-        recyclerViewCategory();
-        recyclerViewFood();
+//        recyclerViewCategory();
+//        recyclerViewFood();
 
     }
 
@@ -89,17 +89,17 @@ public class ProductManagerActivity extends AppCompatActivity implements View.On
         }
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        categoryHomeAdapter.startListening();
-        foodHomeAdapter.startListening();
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        categoryHomeAdapter.stopListening();
-        foodHomeAdapter.stopListening();
-    }
+//    @Override
+//    public void onStart() {
+//        super.onStart();
+//        categoryHomeAdapter.startListening();
+//        foodHomeAdapter.startListening();
+//    }
+//
+//    @Override
+//    public void onStop() {
+//        super.onStop();
+//        categoryHomeAdapter.stopListening();
+//        foodHomeAdapter.stopListening();
+//    }
 }
