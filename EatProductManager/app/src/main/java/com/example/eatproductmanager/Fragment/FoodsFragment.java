@@ -281,7 +281,7 @@ public class FoodsFragment extends Fragment implements View.OnClickListener, Pop
                 return true;
             case R.id.mnuSortedPriceDecrease:
                 FirebaseRecyclerOptions<FoodDomain> optionsFoodDec = new FirebaseRecyclerOptions.Builder<FoodDomain>()
-                        .setQuery(FirebaseDatabase.getInstance().getReference().child("Food").orderByChild("-price"), FoodDomain.class)
+                        .setQuery(FirebaseDatabase.getInstance().getReference().child("Food").orderByChild("price").limitToLast(50), FoodDomain.class)
                         .build();
 
                 foodAdapter = new FoodAdapter(optionsFoodDec, view.getContext());

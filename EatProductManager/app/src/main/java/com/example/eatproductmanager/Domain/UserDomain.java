@@ -2,7 +2,6 @@ package com.example.eatproductmanager.Domain;
 
 public class UserDomain {
     private String Name, Password, Phone, Role;
-
     public int getEatItCoin() {
         return eatItCoin;
     }

@@ -12,6 +12,7 @@ import android.view.MenuItem;
 
 import com.example.eatproductmanager.Fragment.CategoriesFragment;
 import com.example.eatproductmanager.Fragment.FoodsFragment;
+import com.example.eatproductmanager.Fragment.OrdersFragment;
 import com.example.eatproductmanager.Fragment.UsersFragment;
 import com.google.android.material.navigation.NavigationView;
 
@@ -47,6 +48,9 @@ public class HandleManagerActivity extends AppCompatActivity implements Navigati
                 break;
             case R.id.nav_categories:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new CategoriesFragment()).commit();
+                break;
+            case R.id.nav_orders:
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new OrdersFragment()).commit();
                 break;
         }
         drawerLayout.closeDrawer(GravityCompat.START);

@@ -112,24 +112,23 @@ public class CategoryAdapter extends FirebaseRecyclerAdapter<CategoryDomain, Cat
 
         // === Xu lí hiển thị số sản phẩm theo Category tương ứng ===
         DatabaseReference productsRef = FirebaseDatabase.getInstance().getReference("Food");
-        DatabaseReference categorysRef = FirebaseDatabase.getInstance().getReference("Category");
-        categorysRef
+        DatabaseReference categoryRef = FirebaseDatabase.getInstance().getReference("Category");
+        categoryRef
                 .orderByChild("name")
                 .equalTo(model.getName())
                 .addListenerForSingleValueEvent(new ValueEventListener() {
-
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
-                            clubkey = childSnapshot.getKey();
+                            clubkey = childSnapshot.getKey(); // === Thực hiện lấy key tương ứng cho mỗi Category ===
                             holder.txtCategoryIdItem.setText(clubkey);
-                            Log.d("Cases", "Id: " + clubkey);
 
+                            // === Thực hiện truy vấn tới bảng Food và đếm số lượng Food ứng với Category đó ===
                             Query query = productsRef.orderByChild("categoryID").equalTo(clubkey);
                             query.addValueEventListener(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                    Log.i("Cases", "M case count: "+snapshot.getChildrenCount());
+                                    // === Gán số lượng sản phẩm cho Category tương ứng ===
                                     holder.txtQualityProductByCategory.setText(snapshot.getChildrenCount() + "");
                                 }
 
@@ -147,18 +146,12 @@ public class CategoryAdapter extends FirebaseRecyclerAdapter<CategoryDomain, Cat
                     }
                 });
 
-
-
-
-
-
-
+        // === Xử lí checkbox nhiều trên Category ===
         holder.cbCategoryItem.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if(holder.cbCategoryItem.isChecked()) {
                     positionsCategoryChecked.add(position);
-                    Log.d("Checked", "checked: " + positionsCategoryChecked.toString());
                 } else {
                     ArrayList<Integer> positionsRestChecked = new ArrayList<Integer>();
                     for(int p : positionsCategoryChecked) {
@@ -167,7 +160,6 @@ public class CategoryAdapter extends FirebaseRecyclerAdapter<CategoryDomain, Cat
                         }
                     }
                     positionsCategoryChecked = positionsRestChecked;
-                    Log.d("Checked", "not checked "  + positionsCategoryChecked.toString());
                 }
             }
         });

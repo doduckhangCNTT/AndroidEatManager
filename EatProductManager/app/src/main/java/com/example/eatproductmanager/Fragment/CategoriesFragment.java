@@ -123,6 +123,7 @@ public class CategoriesFragment extends Fragment implements View.OnClickListener
         // Tham chieu den recycler view
         recyclerView = (RecyclerView) view.findViewById(R.id.rvCategories);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
         btnCreateCategoryItem = (Button) view.findViewById(R.id.btnCreateCategory);
         btnDeleteCategoryItem = (Button) view.findViewById(R.id.btnDeleteCategoryChoice);
         btnSortCategory = (Button) view.findViewById(R.id.btnSortedCategory);
@@ -280,7 +281,6 @@ public class CategoriesFragment extends Fragment implements View.OnClickListener
     public boolean onMenuItemClick(MenuItem item) {
         switch(item.getItemId()) {
             case R.id.mnuSortCategoryName:
-                Log.d("Sort", "Sort Category");
                 FirebaseRecyclerOptions<CategoryDomain> options = new FirebaseRecyclerOptions.Builder<CategoryDomain>()
                         .setQuery(FirebaseDatabase.getInstance().getReference().child("Category").orderByChild("name"), CategoryDomain.class)
                         .build();
